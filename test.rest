@@ -1,0 +1,31 @@
+### Get all contacts
+GET http://localhost:8080/contacts
+Accept: application/json
+
+### Get contact by ID
+GET http://localhost:8080/contacts/69064d67a435ee58a0ab9b80
+Accept: application/json
+
+### Create a new contact
+POST http://localhost:8080/contacts
+Content-Type: application/json
+
+{
+    "firstName": "Fatima",
+    "lastName": "Ortigoza",
+    "email": "fatimaortigoza61@gmail.com",
+    "favoriteColor": "red",
+    "birthday": "04-19-1961"
+}
+###
+
+### Update contact
+PUT http://localhost:8080/contacts/69064d37a435ee58a0ab9b7f
+Content-Type: application/json
+
+{
+  "email": "aguspal@gmail.com",
+  "favoriteColor": "green"
+}
+### Delete a contact by ID
+DELETE http://localhost:8080/contacts/69064d67a435ee58a0ab9b80
