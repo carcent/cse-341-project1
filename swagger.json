@@ -2,16 +2,20 @@
   "swagger": "2.0",
   "info": {
     "title": "Contact API",
-    "description": "Contact API",
+    "description": "API for managing contacts",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "cse-341-project1-mvvt.onrender.com",
   "basePath": "/",
-  "schemes": ["http"],
+  "schemes": ["https"],
   "servers": [
     {
+      "url": "https://cse-341-project1-mvvt.onrender.com",
+      "description": "Render (production) server"
+    },
+    {
       "url": "http://localhost:8080",
-      "description": "Local server"
+      "description": "Local development server"
     }
   ],
   "paths": {
