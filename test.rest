@@ -11,11 +11,11 @@ POST http://localhost:8080/contacts
 Content-Type: application/json
 
 {
-    "firstName": "Fatima",
-    "lastName": "Ortigoza",
-    "email": "fatimaortigoza61@gmail.com",
+    "firstName": "Peter",
+    "lastName": "Anguila",
+    "email": "peang99@gmail.com",
     "favoriteColor": "red",
-    "birthday": "04-19-1961"
+    "birthday": "04-17-1999"
 }
 ###
 
@@ -28,4 +28,4 @@ Content-Type: application/json
   "favoriteColor": "green"
 }
 ### Delete a contact by ID
-DELETE http://localhost:8080/contacts/69064d67a435ee58a0ab9b80
+DELETE http://localhost:8080/contacts/6919382e48658534fa66c35e

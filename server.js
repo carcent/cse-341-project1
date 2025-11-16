@@ -8,15 +8,17 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const port = process.env.PORT || 8080;
 
-app
-  .use(express.json())
-  .use('/', require('./routes'))
-  .use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-  .use(
-    cors({
-      origin: ['https://cse-341-project1-mvvt.onrender.com', 'http://localhost:8080']
-    })
-  );
+app.use(
+  cors({
+    origin: ['https://cse-341-project1-mvvt.onrender.com', 'http://localhost:8080']
+  })
+);
+
+app.use(express.json());
+
+app.use('/', require('./routes'));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 mongodb.initDb((err) => {
   if (err) {
