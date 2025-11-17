@@ -9,4 +9,4 @@ function errorHandler(err, req, res, next) {
     error: process.env.NODE_ENV === 'production' ? undefined : err.stack
   });
 }
-module.export = errorHandler;
+module.exports = errorHandler;
