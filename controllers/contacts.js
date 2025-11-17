@@ -64,6 +64,11 @@ const createContact = async (req, res, next) => {
 // update contact
 const updateContact = async (req, res, next) => {
   try {
+    if (!req.body.firstName?.trim() || !req.body.lastName?.trim() || !req.body.email?.trim()) {
+      return res.status(400).json({
+        message: 'First name, last name, and email are required.'
+      });
+    }
     const contactId = new objectId(req.params.id);
 
     const contact = {
@@ -78,7 +83,7 @@ const updateContact = async (req, res, next) => {
       .getDatabase()
       .db()
       .collection('contacts')
-      .replaceOne({ _id: contactId }, contact);
+      .updateOne({ _id: contactId }, { $set: contact });
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: 'Contact not found.' });
