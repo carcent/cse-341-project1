@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
     "firstName": "Peter",
-    "lastName": "Anguila",
+    "lastName": "Ang",
     "email": "peang99@gmail.com",
     "favoriteColor": "red",
     "birthday": "04-17-1999"

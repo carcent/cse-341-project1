@@ -7,6 +7,7 @@ const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const port = process.env.PORT || 8080;
+const errorHandler = require('./middleware/errorHandler');
 
 app.use(
   cors({
@@ -19,6 +20,8 @@ app.use(express.json());
 app.use('/', require('./routes'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use(errorHandler);
 
 mongodb.initDb((err) => {
   if (err) {
