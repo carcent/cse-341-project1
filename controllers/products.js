@@ -23,15 +23,15 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
-    if (!req.body.firstName || !req.body.lastName || !req.body.email) {
-      return res.status(400).json({ message: 'First name, last name, and email are required.' });
+    if (!req.body.name || !req.body.price || !req.body.description) {
+      return res
+        .status(400)
+        .json({ message: 'Product name, price, and description are required.' });
     }
     const Product = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      favoriteColor: req.body.favoriteColor,
-      birthday: req.body.birthday
+      name: req.body.name,
+      price: req.body.price,
+      description: req.body.description
     };
     const result = await mongodb.getDatabase().db().collection('Products').insertOne(Product);
     if (!result.acknowledged) {
@@ -49,11 +49,9 @@ const updateProduct = async (req, res) => {
     const ProductId = new objectId(req.params.id);
 
     const Product = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      favoriteColor: req.body.favoriteColor,
-      birthday: req.body.birthday
+      name: req.body.name,
+      price: req.body.price,
+      description: req.body.description
     };
 
     const result = await mongodb
