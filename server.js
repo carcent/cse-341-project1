@@ -73,11 +73,29 @@ passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
 
+//testing
+
+app.use((req, res, next) => {
+  const realRedirect = res.redirect.bind(res);
+  res.redirect = (url) => {
+    console.log('>>> REDIRECTING TO:', url);
+    return realRedirect(url);
+  };
+  next();
+});
+
 // --------------------
 // ROUTES
 // --------------------
 
 app.use('/', require('./routes'));
+
+//test
+app.get('/test-oauth', (req, res) => {
+  const url = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.GITHUB_CALLBACK_URL)}&scope=user:email`;
+  console.log('>>> MANUAL URL:', url);
+  res.send({ url });
+});
 
 // --------------------
 // SWAGGER
