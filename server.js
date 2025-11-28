@@ -86,7 +86,7 @@ app.use(
   '/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
-    oauth2RedirectUrl: 'https://cse-341-project1-mvvt.onrender.com/auth/github/callback'
+    oauth2RedirectUrl: 'https://cse-341-project1-mvvt.onrender.com/api-docs/oauth2-redirect.html'
   })
 );
 
