@@ -29,14 +29,13 @@
               }
             }
           },
-          "500": {
-            "description": "Server error"
-          }
+          "500": { "description": "Server error" }
         }
       },
 
       "post": {
         "summary": "Create a new contact",
+        "security": [{ "GitHubOAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -46,15 +45,9 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Contact created"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "201": { "description": "Contact created" },
+          "400": { "description": "Invalid input" },
+          "500": { "description": "Server error" }
         }
       }
     },
@@ -79,17 +72,14 @@
               }
             }
           },
-          "404": {
-            "description": "Contact not found"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "404": { "description": "Contact not found" },
+          "500": { "description": "Server error" }
         }
       },
 
       "put": {
         "summary": "Update a contact by ID",
+        "security": [{ "GitHubOAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -116,6 +106,7 @@
 
       "delete": {
         "summary": "Delete a contact by ID",
+        "security": [{ "GitHubOAuth": [] }],
         "parameters": [
           {
             "in": "path",
@@ -240,6 +231,21 @@
   },
 
   "components": {
+    "securitySchemes": {
+      "GitHubOAuth": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://github.com/login/oauth/authorize",
+            "tokenUrl": "https://github.com/login/oauth/access_token",
+            "scopes": {
+              "user:email": "Access user email"
+            }
+          }
+        }
+      }
+    },
+
     "schemas": {
       "Contact": {
         "type": "object",
@@ -277,7 +283,7 @@
 
       "ProductInput": {
         "type": "object",
-        "required": ["name", "price"],
+        "required": ["name", "price", "description"],
         "properties": {
           "name": { "type": "string" },
           "price": { "type": "number" },
