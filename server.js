@@ -17,22 +17,13 @@ const gitHubStrategy = require('passport-github2').Strategy;
 
 app.use(
   cors({
-    origin: ['https://cse-341-project1-mvvt.onrender.com', 'http://localhost:8080']
+    origin: ['https://cse-341-project1-mvvt.onrender.com', 'http://localhost:8080'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
   })
 );
 
 app.use(express.json());
-
-// CORS extra
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS, PUT');
-  next();
-});
 
 // --------------------
 // SESSION + PASSPORT
@@ -40,9 +31,13 @@ app.use((req, res, next) => {
 
 app.use(
   session({
-    secret: 'secret',
+    secret: process.env.SESSION_SECRET || 'supersecret',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+      secure: true,
+      httpOnly: true
+    }
   })
 );
 
@@ -86,7 +81,14 @@ app.use(
   '/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
-    oauth2RedirectUrl: 'https://cse-341-project1-mvvt.onrender.com/api-docs/oauth2-redirect.html'
+    swaggerOptions: {
+      oauth2RedirectUrl: 'https://cse-341-project1-mvvt.onrender.com/api-docs/oauth2-redirect.html',
+      oauth: {
+        clientId: process.env.SWAGGER_GITHUB_CLIENT_ID,
+        clientSecret: process.env.SWAGGER_GITHUB_CLIENT_SECRET,
+        scopes: ['user:email']
+      }
+    }
   })
 );
 

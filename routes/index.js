@@ -1,14 +1,16 @@
+// routes/index.js
 const express = require('express');
 const router = express.Router();
 
+// Home
 router.get('/', (req, res) => {
-  res.send('Welcome to the Home Page!');
+  res.send('API is running...');
 });
 
 // Auth Routes
 router.use('/auth', require('./auth'));
 
-// API routes
+// API Routes
 router.use('/contacts', require('./contacts'));
 router.use('/products', require('./products'));
 

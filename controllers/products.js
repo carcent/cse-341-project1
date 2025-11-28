@@ -1,7 +1,14 @@
 const mongodb = require('../data/database');
-const objectId = require('mongodb').ObjectId;
+const { ObjectId } = require('mongodb');
 
-// Get all
+// ------------------------------------------
+// Helper: Validate ObjectId
+// ------------------------------------------
+const isValidId = (id) => ObjectId.isValid(id) && String(new ObjectId(id)) === id;
+
+// ------------------------------------------
+// GET ALL PRODUCTS
+// ------------------------------------------
 const getAllProducts = async (req, res, next) => {
   try {
     const products = await mongodb.getDatabase().db().collection('Products').find().toArray();
@@ -12,21 +19,25 @@ const getAllProducts = async (req, res, next) => {
   }
 };
 
-// Get by ID
+// ------------------------------------------
+// GET PRODUCT BY ID
+// ------------------------------------------
 const getProductById = async (req, res, next) => {
   try {
-    const productId = new objectId(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: 'Invalid ID format.' });
+    }
 
     const product = await mongodb
       .getDatabase()
       .db()
       .collection('Products')
-      .findOne({ _id: productId });
+      .findOne({ _id: new ObjectId(id) });
 
     if (!product) {
-      const err = new Error('Product not found');
-      err.status = 404;
-      throw err;
+      return res.status(404).json({ message: 'Product not found.' });
     }
 
     res.status(200).json(product);
@@ -35,49 +46,66 @@ const getProductById = async (req, res, next) => {
   }
 };
 
-// Create
+// ------------------------------------------
+// CREATE PRODUCT
+// ------------------------------------------
 const createProduct = async (req, res, next) => {
   try {
-    if (!req.body.name || !req.body.price || !req.body.description) {
-      return res
-        .status(400)
-        .json({ message: 'Product name, price, and description are required.' });
+    const { name, price, description } = req.body;
+
+    if (!name?.trim() || !price || !description?.trim()) {
+      return res.status(400).json({
+        message: 'Product name, price, and description are required.'
+      });
     }
 
     const newProduct = {
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description
+      name: name.trim(),
+      price,
+      description: description.trim()
     };
 
     const result = await mongodb.getDatabase().db().collection('Products').insertOne(newProduct);
 
-    if (!result.acknowledged) {
-      throw new Error('Could not create product');
-    }
-
-    res.status(201).json(result);
+    res.status(201).json({
+      id: result.insertedId,
+      ...newProduct
+    });
   } catch (error) {
     next(error);
   }
 };
 
-// Update
+// ------------------------------------------
+// UPDATE PRODUCT (PUT)
+// ------------------------------------------
 const updateProduct = async (req, res, next) => {
   try {
-    const productId = new objectId(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: 'Invalid ID format.' });
+    }
+
+    const { name, price, description } = req.body;
+
+    if (!name?.trim() || !price || !description?.trim()) {
+      return res.status(400).json({
+        message: 'Product name, price, and description are required.'
+      });
+    }
 
     const updatedProduct = {
-      name: req.body.name,
-      price: req.body.price,
-      description: req.body.description
+      name: name.trim(),
+      price,
+      description: description.trim()
     };
 
     const result = await mongodb
       .getDatabase()
       .db()
       .collection('Products')
-      .replaceOne({ _id: productId }, updatedProduct);
+      .replaceOne({ _id: new ObjectId(id) }, updatedProduct);
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: 'Product not found.' });
@@ -89,16 +117,22 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
-// Delete
+// ------------------------------------------
+// DELETE PRODUCT
+// ------------------------------------------
 const deleteProduct = async (req, res, next) => {
   try {
-    const productId = new objectId(req.params.id);
+    const { id } = req.params;
+
+    if (!isValidId(id)) {
+      return res.status(400).json({ message: 'Invalid ID format.' });
+    }
 
     const result = await mongodb
       .getDatabase()
       .db()
       .collection('Products')
-      .deleteOne({ _id: productId });
+      .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Product not found.' });
