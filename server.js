@@ -10,50 +10,55 @@ const errorHandler = require('./middleware/errorHandler');
 const passport = require('passport');
 const session = require('express-session');
 const gitHubStrategy = require('passport-github2').Strategy;
+const bodyParser = require('body-parser');
 
 // --------------------
 // MIDDLEWARES
 // --------------------
 
-app.use(
-  cors({
-    origin: ['https://cse-341-project1-mvvt.onrender.com', 'http://localhost:8080'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-  })
-);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 
-app.use(express.json());
-
-// --------------------
-// SESSION + PASSPORT
-// --------------------
-
+app.use(bodyParser.json());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'supersecret',
+    secret: 'secret',
     resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: true,
-      httpOnly: true
-    }
+    saveUninitialized: true
   })
 );
 
 app.use(passport.initialize());
+
 app.use(passport.session());
 
-// --------------------
-// PASSPORT STRATEGY
-// --------------------
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  // res.setHeader(
+  //     'Access-Control-Allow-Headers',
+  //     'Origin, X-Requested-With, Content-Type, Accept, Z-Key'
+  // );
+  // res.setHeader(
+  //     'Access-Control-Allow-Methods',
+  //     'GET, POST, PUT, DELETE, OPTIONS');
+  next();
+});
+
+app.use(
+  cors({
+    origin: 'http://localhost:8080',
+    credentials: true,
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
+  })
+);
+
+app.use('/', require('./routes'));
 
 passport.use(
   new gitHubStrategy(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: process.env.GITHUB_CALLBACK_URL
+      callbackURL: process.env.CALLBACK_URL
     },
     function (accessToken, refreshToken, profile, done) {
       return done(null, profile);
@@ -64,32 +69,21 @@ passport.use(
 passport.serializeUser((user, done) => {
   done(null, user);
 });
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
+passport.deserializeUser((user, done) => {
+  done(null, user);
 });
 
-// --------------------
-// ROUTES
-// --------------------
+app.get('/', (req, res) => {
+  res.send(req.session.user ? `Logged in as ${req.session.user.username}` : 'Logged Out');
+});
 
-app.use('/', require('./routes'));
-
-// --------------------
-// SWAGGER
-// --------------------
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
-    swaggerOptions: {
-      oauth2RedirectUrl: 'https://cse-341-project1-mvvt.onrender.com/api-docs/oauth2-redirect.html',
-      oauth: {
-        clientId: process.env.SWAGGER_GITHUB_CLIENT_ID,
-        clientSecret: process.env.SWAGGER_GITHUB_CLIENT_SECRET,
-        scopes: ['user:email']
-      }
-    }
-  })
+app.get(
+  '/github/callback',
+  passport.authenticate('github', { failureRedirect: '/api-docs' }),
+  (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/');
+  }
 );
 
 // --------------------
