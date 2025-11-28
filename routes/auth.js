@@ -14,6 +14,11 @@ router.get(
       message: 'Logged in successfully',
       user: req.user
     });
+    console.log('Using callback URL:', process.env.GITHUB_CALLBACK_URL);
+    console.log('--- ENV CHECK ---');
+    console.log('GITHUB_CLIENT_ID    =', process.env.GITHUB_CLIENT_ID);
+    console.log('GITHUB_CALLBACK_URL =', process.env.GITHUB_CALLBACK_URL);
+    console.log('------------------');
   }
 );
 
